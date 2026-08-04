@@ -1,0 +1,58 @@
+{
+ "anchors": [
+  {
+   "ref": "Franke, Grass, Rensing, Nies 2003, J Bacteriol 185:3804-3812",
+   "medium": "optimized LB pH7.5 aerobic",
+   "strain": "W3110 delta-cueO (control strain GR1)",
+   "value": "MIC 3.0 mM CuSO4",
+   "status": "VERIFIED from full text; conservative lower bound (cueO- more Cu-sensitive than WT)"
+  },
+  {
+   "ref": "Rosenberg, Umerov, Teaer, Ivask 2025/2026, Microbiol Spectrum (biorxiv 2025.08.27.672559)",
+   "medium": "MOPS minimal medium (MMM) aerobic",
+   "strain": "WT BW25113",
+   "value": "MIC 8 mM Cu over 48 h (4 mM = 0.5xMIC)",
+   "status": "VERIFIED from preprint; '4 mM at 16-20 h' endpoint split NOT in preprint, unverified"
+  },
+  {
+   "ref": "Macomber & Imlay 2009, PNAS 106:8344-8349",
+   "medium": "simple salts medium, glucose sole carbon source, aerobic",
+   "strain": "WT W3110",
+   "value": "growth defect at Cu(II) >8 uM (Fig 1A; doses 0/8/16/32 uM)",
+   "status": "VERIFIED from full text (PDF)"
+  },
+  {
+   "ref": "Macomber & Imlay 2009, PNAS 106:8344-8349",
+   "medium": "simple salts medium, glucose sole carbon source, aerobic",
+   "strain": "LEM33 (copA cueO cusCFBA triple KO)",
+   "value": "growth defect at Cu(II) 0.25-1 uM (Fig 1B; doses 0/0.25/0.5/1 uM)",
+   "status": "VERIFIED from full text; context only, NOT our strain"
+  }
+ ],
+ "ladder_LB_mM": [
+  0,
+  0.5,
+  1.0,
+  1.5,
+  2.0,
+  3.0,
+  4.0,
+  6.0,
+  8.0,
+  10.0
+ ],
+ "ladder_M9_uM": [
+  0,
+  1,
+  2,
+  5,
+  10,
+  25,
+  50,
+  100,
+  250,
+  500
+ ],
+ "strain_note": "DH5alpha carries copA/cueO/cus (WT-like Cu homeostasis); bracket with WT anchors, NOT the triple-KO 0.25 uM figure.",
+ "ladder_note": "LB top raised 6->10 mM to exceed the verified 48h MIC (8 mM, Rosenberg). Onset scale is chelation/bioavailability-dependent, not rich-vs-minimal; two minimal-medium anchors span ~1000-fold. M9 ~8uM anchor (Macomber WT W3110, simple-salts glucose medium) verified from full text; medium may differ from wet-lab M9, so run a range-finder (0/10/100/1000 uM) before committing."
+}
