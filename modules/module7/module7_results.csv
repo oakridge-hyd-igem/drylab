@@ -1,0 +1,31 @@
+param,metric,source_rationale,baseline,low_val,low_result,high_val,high_result,max_abs_rel_swing_pct,sensitivity_tier
+beta_leak0,A_trust_min,T1: copper-promoter fold-change (Fu 2024); 1% engineered floor to 50% worst natural,15.6,10.0,51.6,500.0,7.8,230.8,high
+beta_leak0,B_thresh_uM,T1: copper-promoter fold-change (Fu 2024); 1% engineered floor to 50% worst natural,0.25,10.0,0.09,500.0,4.1,1540.0,high
+beta_leak0,C_retention,T1: copper-promoter fold-change (Fu 2024); 1% engineered floor to 50% worst natural,1.0,10.0,0.9989,500.0,1.0,0.1,low
+beta_leak0,D_accuracy,T1: copper-promoter fold-change (Fu 2024); 1% engineered floor to 50% worst natural,0.9438,10.0,0.9933,500.0,0.6692,29.1,moderate
+k_flip,A_trust_min,Hsiao 2016 nominal 0.4; asymmetric fit 0.2-0.5,15.6,0.2,22.8,0.5,13.8,46.2,moderate
+k_flip,B_thresh_uM,Hsiao 2016 nominal 0.4; asymmetric fit 0.2-0.5,0.25,0.2,0.52,0.5,0.21,108.0,high
+k_flip,C_retention,Hsiao 2016 nominal 0.4; asymmetric fit 0.2-0.5,1.0,0.2,1.0,0.5,1.0,0.0,low
+k_flip,D_accuracy,Hsiao 2016 nominal 0.4; asymmetric fit 0.2-0.5,0.9438,0.2,0.9292,0.5,0.9475,1.5,low
+K_I,A_trust_min,Hsiao Kd~10 molecules; flip half-saturation,15.6,5.0,11.4,20.0,21.6,38.5,moderate
+K_I,B_thresh_uM,Hsiao Kd~10 molecules; flip half-saturation,0.25,5.0,0.27,20.0,0.3,20.0,moderate
+K_I,C_retention,Hsiao Kd~10 molecules; flip half-saturation,1.0,5.0,1.0,20.0,1.0,0.0,low
+K_I,D_accuracy,Hsiao Kd~10 molecules; flip half-saturation,0.9438,5.0,0.9312,20.0,0.9458,1.3,low
+gamma_dil,A_trust_min,growth/dilution rate (doubling 1.4-3.5 h),15.6,0.2,15.6,0.5,15.6,0.0,low
+gamma_dil,B_thresh_uM,growth/dilution rate (doubling 1.4-3.5 h),0.25,0.2,0.25,0.5,0.25,0.0,low
+gamma_dil,C_retention,growth/dilution rate (doubling 1.4-3.5 h),1.0,0.2,1.0,0.5,1.0,0.0,low
+gamma_dil,D_accuracy,growth/dilution rate (doubling 1.4-3.5 h),0.9438,0.2,0.9421,0.5,0.9425,0.2,low
+gamma_LVA,A_trust_min,Andersen 1998 ssrA-LVA t1/2 25-60 min,15.6,0.7,15.6,1.7,15.6,0.0,low
+gamma_LVA,B_thresh_uM,Andersen 1998 ssrA-LVA t1/2 25-60 min,0.25,0.7,0.25,1.7,0.26,4.0,low
+gamma_LVA,C_retention,Andersen 1998 ssrA-LVA t1/2 25-60 min,1.0,0.7,1.0,1.7,1.0,0.0,low
+gamma_LVA,D_accuracy,Andersen 1998 ssrA-LVA t1/2 25-60 min,0.9438,0.7,0.9421,1.7,0.9442,0.2,low
+K_copper,B_thresh_uM,"sensor half-max, inferred from operating windows (M1)",0.25,1.0,0.05,15.0,0.74,196.0,high
+K_copper,D_accuracy,"sensor half-max, inferred from operating windows (M1)",0.9438,1.0,0.9029,15.0,0.8575,9.1,low
+n_hill,B_thresh_uM,Hill coefficient; Stoyanov abstract + MerR -> ~1,0.25,1.0,0.25,2.0,1.2,380.0,high
+n_hill,D_accuracy,Hill coefficient; Stoyanov abstract + MerR -> ~1,0.9438,1.0,0.9438,2.0,0.885,6.2,low
+f_rbs,A_trust_min,weak-RBS translation factor vs B0034 (design assumption),15.6,0.05,21.6,0.3,9.6,38.5,moderate
+f_rbs,B_thresh_uM,weak-RBS translation factor vs B0034 (design assumption),0.25,0.05,0.3,0.3,0.33,32.0,moderate
+f_rbs,C_retention,weak-RBS translation factor vs B0034 (design assumption),1.0,0.05,1.0,0.3,1.0,0.0,low
+f_rbs,D_accuracy,weak-RBS translation factor vs B0034 (design assumption),0.9438,0.05,0.9458,0.3,0.9225,2.3,low
+cost_c,C_retention,"fitness cost, Bienick 2014 + Gonzalez 2025 bounded",1.0,0.0,1.0,0.05,1.0,0.0,low
+ext_cv,D_accuracy,E. coli extrinsic noise floor CV (Taniguchi 2010),0.9438,0.1,0.9971,1.0,0.6079,35.6,moderate

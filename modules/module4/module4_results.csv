@@ -1,0 +1,5 @@
+design,beta_leak,gamma,leak_hazard_per_h,f_48h_analytic_c2pct,f_90gen_stochastic_c2pct,f_90gen_leakfree_c2pct,f_star_c2pct
+untagged,100.0,0.3,0.3883,1.0,1.0,0.604,1.0
+weak RBS,10.0,0.3,0.3077,1.0,1.0,0.604,1.0
+LVA tag,100.0,1.34,0.3527,1.0,1.0,0.604,1.0
+combined,10.0,1.34,0.1709,1.0,1.0,0.604,1.0

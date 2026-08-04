@@ -1,0 +1,23 @@
+{
+  "memory_retention_benchmark": {
+    "value": "recombinase memory reported to persist over many cell generations (~90+ often cited)",
+    "source": "Siuti, Yazbek & Lu 2013, Nat. Biotechnol. 31:448-452 (DOI-verified via CrossRef)",
+    "provenance": "CAVEAT: the specific '90 generations' figure was NOT confirmed from full text or abstract this session (closed access, abstract not retrievable). Recorded as a literature-reported order-of-magnitude target, not a session-verified measurement.",
+    "role": "consistency-check reference, NOT a quantitative validation datapoint"
+  },
+  "bxb1_expression_burden": {
+    "value": "no measurable metabolic burden from increased Bxb1 expression",
+    "source": "Gonzalez-Colell & Macia 2025, Sci. Rep. 15:31311 (10.1038/s41598-025-17024-y, full text read)",
+    "provenance": "Direct quote confirmed from fetched full text: recombinase expression 'did not impose a measurable metabolic burden on GFP expression in the control construct.'"
+  },
+  "reporter_expression_growth_tradeoff": {
+    "value": "approx linear; strong eGFP (>=0.07 mg/mg DCW) needed to depress growth to 0.59/h",
+    "source": "Bienick, Young, Klesmith, Detwiler et al. 2014, PLoS ONE 9:e109105 (full text read)",
+    "provenance": "Confirmed from fetched full text. Bounds a single moderate reporter's cost as small; does NOT yield a specific number for this construct."
+  },
+  "fitness_cost_used": {
+    "value": "nominal baseline c=0.02, sweep range 0.0-0.05",
+    "provenance": "QUALITATIVE-INFORMED ESTIMATE, not derived from any paper. Chosen to be consistent with 'burden is small'; replaces the earlier arbitrary 0-10% sweep. Conclusion is robust across the whole range (see spec robustness check).",
+    "derived": false
+  }
+}
