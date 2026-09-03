@@ -1,0 +1,5 @@
+construct,replicate_id,cu_uM,time_h,OD600,GFP_raw,GFP_OD_normalized,operator,date,plate_position
+# example rows below, delete before real use
+BCM1v2MC,1,0,2,0.42,850,2023.8,initials,2026-09-09,A1
+BCM1v2MC,1,1,2,0.41,920,2243.9,initials,2026-09-09,A2
+BCM1v2MC,1,5,2,0.40,1450,3625.0,initials,2026-09-09,A3

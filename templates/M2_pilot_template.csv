@@ -1,0 +1,5 @@
+construct,tag_variant,induction,replicate_id,time_h,OD600,GFP_raw,GFP_OD_normalized,pcr_call,operator,date
+# example rows below, delete before real use. pcr_call must be one of: OFF_only, mixed, ON_only
+v3b_recorder,untagged,glucose,1,16,1.1,300,272.7,OFF_only,initials,2026-09-10
+v3b_recorder,LVA,glucose,1,16,1.05,180,171.4,OFF_only,initials,2026-09-10
+v3b_recorder,untagged,arabinose,1,16,0.98,9500,9693.9,ON_only,initials,2026-09-10
