@@ -18,9 +18,26 @@ values and produce readable output.
 
 | # | Template CSV | Script | Answers | Feeds into |
 |---|---|---|---|---|
-| 1 | M1_dose_response_template.csv | fit_M1_dose_response.py | Real Hill K and n for the copper sensor | Module 1 parameter update |
-| 2 | M2_pilot_template.csv | fit_M2_pilot.py | Real OFF-state leak and induced-switching level, Untagged vs LVA | Dry Model D2 leak comparison, the LVA-vs-Untagged call |
-| 3 | M2_replicates_memory_template.csv | fit_M2_replicates_memory.py | Population-to-population CV (task T3) and memory retention after inducer removal | Module 5 single- vs two-integrase decision, Module 4 memory validation |
+| 1 | M1_dose_response_template.csv | fit_M1_dose_response.py | Real Hill K and n for the copper sensor, with R-squared and reduced chi-square goodness-of-fit | Module 1 parameter update |
+| 2 | M2_pilot_template.csv | fit_M2_pilot.py | Real OFF-state leak and induced-switching level, Untagged vs LVA, checked against a Dry Model D2 prediction band | Dry Model D2 leak comparison, the LVA-vs-Untagged call |
+| 3 | M2_replicates_memory_template.csv | fit_M2_replicates_memory.py | Population-to-population CV (task T3) and memory retention after inducer removal, checked against a Module 4 prediction band | Module 5 single- vs two-integrase decision, Module 4 memory validation |
+
+## Additional tool: prediction bands, not just point estimates
+
+`m1_uncertainty_band.py` answers a different question than the fitting scripts above: before
+any real data exists (or alongside it), what range of dose-response curves does the
+project's own literature-grounded parameter uncertainty already predict? It draws
+beta_leak0, K, and n from their grounded plausible ranges (Module 7's PARAMS table) and
+plots the resulting 50%/90% prediction bands. Given a filled M1 CSV, it also reports what
+fraction of measured points fall inside the 90% band - a first check on whether the
+measurement is consistent with prior grounded uncertainty, before fitting new point
+estimates. `fit_M2_pilot.py` and `fit_M2_replicates_memory.py` build the same kind of
+prediction band inline, using Dry Model D2 and Module 4 respectively, so all three
+templates report both a point comparison and a model-uncertainty coverage check.
+
+Usage: `python m1_uncertainty_band.py [optional_filled_M1_csv.csv]`. Caveat: the band
+reflects parameter uncertainty only, not measurement noise, and narrows to near-zero near
+saturation (see the script's own docstring for detail).
 
 ## Usage
 

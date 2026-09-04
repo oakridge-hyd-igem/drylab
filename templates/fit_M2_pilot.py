@@ -15,7 +15,9 @@ Input CSV columns (see M2_pilot_template.csv):
     pcr_call in {OFF_only, mixed, ON_only}
 
 Output:
-    - m2_pilot_summary.csv    : per (tag_variant, induction, time_h) GFP stats + PCR category fractions
+    - m2_pilot_summary.csv    : per (tag_variant, induction, time_h) GFP stats + PCR category
+                                fractions, plus the Dry Model D2 prediction and residual for
+                                each condition's ON_only fraction (goodness-of-fit check)
     - m2_pilot_comparison.png : GFP/OD600 leak and switching, untagged vs LVA, by condition
 """
 import sys
@@ -24,6 +26,57 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 VALID_CALLS = {"OFF_only", "mixed", "ON_only"}
+
+# Dry Model D2 (re-mapped) predicted ON_only (flipped) fraction, from the grounded pBAD
+# leak engine (D2_remap_model.py: k_flip=0.4/h, K_I=10, gamma_dil=0.3/h, gamma_LVA=1.04/h).
+# Reproduced inline (not imported) so this template stays standalone.
+_BETA_MAX_EFF = 1000.0 * 0.1  # strong-RBS ceiling * weak-RBS (B0033) factor
+_K_FLIP, _K_I, _GAMMA_DIL, _GAMMA_LVA = 0.4, 10.0, 0.30, 1.04
+_LEAK_FRAC = {"glucose": 1 / 1200, "no_inducer": 0.005, "arabinose": 1.0}
+
+
+def _d2_predicted_flip(condition, tag_variant, t_h, k_flip=_K_FLIP, K_I=_K_I,
+                        gamma_dil=_GAMMA_DIL, gamma_lva=_GAMMA_LVA):
+    """Predicted ON_only (flipped) fraction at time t_h, from Dry Model D2."""
+    gamma = gamma_dil + (gamma_lva if tag_variant == "LVA" else 0.0)
+    beta = _LEAK_FRAC.get(condition, np.nan) * _BETA_MAX_EFF
+    if np.isnan(beta):
+        return np.nan
+    dt = 1e-3
+    tt = np.arange(0, t_h + dt, dt)
+    I = (beta / gamma) * (1 - np.exp(-gamma * tt))
+    lam = k_flip * I / (I + K_I)
+    cum = np.concatenate([[0], np.cumsum((lam[1:] + lam[:-1]) / 2 * np.diff(tt))])
+    return 1 - np.exp(-cum[-1])
+
+
+# Plausible ranges for the flip-kinetics parameters, matching Module 7's PARAMS table
+# (module7_sensitivity.py: k_flip, K_I, gamma_dil, gamma_LVA). The pBAD leak fractions
+# themselves (glucose/no_inducer/arabinose) are held at their literature point estimates
+# (Guzman 1995 / assumed) since no documented plausible range exists for them yet -
+# only the flip-kinetics uncertainty is propagated here.
+_KINETIC_RANGES = {
+    "k_flip": (0.2, 0.5),
+    "K_I": (5.0, 20.0),
+    "gamma_dil": (0.2, 0.5),
+    "gamma_lva": (0.7, 1.7),
+}
+
+
+def _d2_predicted_flip_band(condition, tag_variant, t_h, n_draws=2000, seed=0):
+    """5th/50th/95th percentile of the D2-predicted ON_only fraction under flip-kinetics
+    parameter uncertainty (leak fractions held fixed; see _KINETIC_RANGES note)."""
+    rng = np.random.default_rng(seed)
+    kf = rng.uniform(*_KINETIC_RANGES["k_flip"], n_draws)
+    KI = rng.uniform(*_KINETIC_RANGES["K_I"], n_draws)
+    gd = rng.uniform(*_KINETIC_RANGES["gamma_dil"], n_draws)
+    gl = rng.uniform(*_KINETIC_RANGES["gamma_lva"], n_draws)
+    draws = np.array([
+        _d2_predicted_flip(condition, tag_variant, t_h, k_flip=kf[i], K_I=KI[i],
+                            gamma_dil=gd[i], gamma_lva=gl[i])
+        for i in range(n_draws)
+    ])
+    return np.percentile(draws, [5, 50, 95])
 
 
 def summarize(df):
@@ -46,6 +99,20 @@ def summarize(df):
         pcr_pivot[f"frac_{c}"] = pcr_pivot[c] / pcr_pivot["total"]
 
     merged = gfp_stats.merge(pcr_pivot, on=["tag_variant", "induction", "time_h"])
+
+    merged["d2_predicted_ON_only"] = merged.apply(
+        lambda r: _d2_predicted_flip(r["induction"], r["tag_variant"], r["time_h"]), axis=1)
+    merged["d2_residual"] = merged["frac_ON_only"] - merged["d2_predicted_ON_only"]
+
+    bands = merged.apply(
+        lambda r: _d2_predicted_flip_band(r["induction"], r["tag_variant"], r["time_h"]), axis=1)
+    merged["d2_band_p5"] = bands.apply(lambda b: b[0])
+    merged["d2_band_p50"] = bands.apply(lambda b: b[1])
+    merged["d2_band_p95"] = bands.apply(lambda b: b[2])
+    merged["inside_d2_90pct_band"] = (
+        (merged["frac_ON_only"] >= merged["d2_band_p5"]) &
+        (merged["frac_ON_only"] <= merged["d2_band_p95"]))
+
     return merged
 
 
@@ -95,6 +162,10 @@ def main(csv_path):
     make_comparison_plot(summary)
     print(summary[["tag_variant", "induction", "time_h", "mean", "frac_ON_only", "frac_OFF_only", "frac_mixed"]]
           .to_string(index=False))
+    n_covered = summary["inside_d2_90pct_band"].sum()
+    n_total = len(summary)
+    print(f"\nDry Model D2 coverage: {n_covered}/{n_total} conditions fall inside the"
+          f" D2 90% prediction band (flip-kinetics uncertainty only, leak fractions fixed)")
     print("Saved m2_pilot_summary.csv and m2_pilot_comparison.png")
 
 

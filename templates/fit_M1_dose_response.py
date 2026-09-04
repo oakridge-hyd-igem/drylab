@@ -13,7 +13,8 @@ Input CSV columns (see M1_dose_response_template.csv):
     operator, date, plate_position
 
 Output:
-    - m1_fit_results.csv     : fitted K, n, beta_max, beta_leak with 95% CI
+    - m1_fit_results.csv     : fitted K, n, beta_max, beta_leak with 95% CI, plus
+                               R-squared and reduced chi-square goodness-of-fit
     - m1_fit_comparison.png  : real data vs literature-proxy curve overlay
 """
 import sys
@@ -49,12 +50,40 @@ def fit_dose_response(df, time_h=None):
     popt, pcov = curve_fit(hill, x, y, p0=p0, bounds=bounds, maxfev=10000)
     perr = np.sqrt(np.diag(pcov))
     beta_max, beta_leak, K, n = popt
+
+    y_pred = hill(x, *popt)
+    resid = y - y_pred
+    ss_res = np.sum(resid**2)
+    ss_tot = np.sum((y - y.mean())**2)
+    r_squared = 1 - ss_res / ss_tot if ss_tot > 0 else np.nan
+
+    # reduced chi-square using per-cu_uM replicate SD as the noise estimate.
+    # falls back to NaN (not zero) for cu_uM values with a single replicate,
+    # since a single point carries no empirical noise estimate.
+    n_params = 4
+    dof = max(len(x) - n_params, 1)
+    rep_sd = sub.groupby("cu_uM")["GFP_OD_normalized"].std()
+    sigma = sub["cu_uM"].map(rep_sd).values
+    valid = sigma > 0
+    if valid.sum() >= n_params:
+        chi2 = np.sum((resid[valid] / sigma[valid])**2)
+        reduced_chi2 = chi2 / max(valid.sum() - n_params, 1)
+    else:
+        reduced_chi2 = np.nan
+
+    lit_pred = hill(x, LIT_BETA_MAX, LIT_BETA_LEAK, LIT_K, LIT_N)
+    lit_ss_res = np.sum((y - lit_pred)**2)
+    lit_r_squared = 1 - lit_ss_res / ss_tot if ss_tot > 0 else np.nan
+
     return {
         "time_h": time_h, "n_points": len(sub),
         "beta_max": beta_max, "beta_max_se": perr[0],
         "beta_leak": beta_leak, "beta_leak_se": perr[1],
         "K_uM": K, "K_se": perr[2],
         "n_hill": n, "n_se": perr[3],
+        "R_squared": r_squared,
+        "reduced_chi_square": reduced_chi2,
+        "literature_proxy_R_squared": lit_r_squared,
     }, x, y
 
 
@@ -84,6 +113,8 @@ def main(csv_path):
     pd.DataFrame([fit]).to_csv("m1_fit_results.csv", index=False)
     make_comparison_plot(fit, x, y)
     print(f"Fitted K={fit['K_uM']:.3f} uM (lit proxy {LIT_K}), n={fit['n_hill']:.3f} (lit proxy {LIT_N})")
+    print(f"R^2={fit['R_squared']:.4f}, reduced chi^2={fit['reduced_chi_square']:.3f}"
+          f" (literature-proxy R^2={fit['literature_proxy_R_squared']:.4f})")
     print("Saved m1_fit_results.csv and m1_fit_comparison.png")
 
 
